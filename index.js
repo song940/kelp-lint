@@ -1,24 +1,45 @@
-const { CLIEngine } = require('eslint');
+const { ESLint, Linter } = require('eslint');
 
-const createESLint = config => {
-  const cli = new CLIEngine(Object.assign({
+const createESLint = async (config = {}) => {
+  const eslint = new ESLint({
     useEslintrc: false,
-    envs: ['browser', 'node'],
-    parser: 'babel-eslint',
-    parserOptions: {
-      ecmaVersion: 2019,
-      sourceType: 'module',
-      ecmaFeatures: {
-        jsx: true,
-        legacyDecorators: true
+    baseConfig: {
+      env: {
+        browser: true,
+        node: true,
+      },
+      extends: [
+        './rules/best-practices',
+        './rules/errors',
+        './rules/node',
+        './rules/style',
+        './rules/variables',
+        './rules/es6',
+        './rules/strict',
+        './rules/react',
+        './rules/react-hooks',
+      ].map(require.resolve),
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+          legacyDecorators: true
+        }
       }
-    }
-  }, config));
-  const formatter = cli.getFormatter();
-  return files => {
-    const report = cli.executeOnFiles(files);
-    return formatter(report.results);
+    },
+    overrideConfig: config,
+  });
+  const { formatter: formatterName = 'stylish', fix } = config;
+  const formatter = await eslint.loadFormatter(formatterName);
+  return async files => {
+    const results = await eslint.lintFiles(files);
+    const resultText = formatter.format(results);
+    if (fix) await ESLint.outputFixes(results);
+    return resultText;
   };
 };
 
-module.exports = createESLint;;
+module.exports = {
+  createESLint,
+};

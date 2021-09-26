@@ -1,8 +1,11 @@
 {
   "name": "kelp-lint",
-  "version": "0.0.0",
-  "description": "lint tool for kelp",
+  "version": "0.0.1",
+  "description": "Lint tool for kelp",
   "main": "index.js",
+  "bin": {
+    "klint": "./bin/kelp-lint.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +25,10 @@
   "homepage": "https://github.com/song940/kelp-lint#readme",
   "dependencies": {
     "babel-eslint": "^10.0.2",
-    "eslint": "*"
+    "eslint": "*",
+    "eslint-plugin-react": "^7.26.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "react": "^17.0.2"
   },
   "directories": {
     "example": "example"
